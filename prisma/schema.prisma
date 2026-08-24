@@ -1,0 +1,88 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String?         @unique
+  emailVerified DateTime?
+  image         String?
+  fullName      String?
+  username      String?         @unique
+  birthPlace    String?
+  birthDate     DateTime?
+  institution   String?         // Sekolah / Universitas
+  major         String?         // Jurusan / Program Studi
+  companyName   String?         // Nama Perusahaan / Tempat Magang
+  mentorName    String?         // Nama Mentor / Pembimbing Magang
+  isOnboarded   Boolean         @default(false)
+  accounts      Account[]
+  sessions      Session[]
+  logs          InternshipLog[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model InternshipLog {
+  id               String   @id @default(cuid())
+  userId           String
+  date             DateTime
+  workMode         String   // "WFO" atau "WFA"
+  startTime        String   // e.g. "08:00"
+  endTime          String   // e.g. "17:00"
+  companyName      String?  // Nama Perusahaan
+  mentorName       String?  // Nama Mentor / Pembimbing Magang
+  activityDesc     String
+  documentationUrl String?  // URL foto atau berkas dokumen
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
