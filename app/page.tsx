@@ -40,7 +40,7 @@ export default function Home() {
               LogIntern
             </h1>
             <p className="text-xs text-zinc-400 font-medium">
-              Notulensi Catatan Harian Magang
+              Notulensi Catatan Harian Magang Anda
             </p>
           </div>
 
